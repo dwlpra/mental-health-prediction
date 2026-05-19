@@ -82,7 +82,7 @@ export default function ChatWindow() {
   }
 
   return (
-    <div className="h-screen flex justify-center">
+    <div className="h-dvh flex justify-center">
       {/* Container utama — full viewport height, desktop: centered max-w-2xl */}
       <div className="w-full h-full flex flex-col
         md:max-w-2xl md:border-x md:border-glass-border">
@@ -123,7 +123,7 @@ export default function ChatWindow() {
         </div>
 
         {/* Input area — model picker + text input */}
-        <div className="px-4 py-3 md:px-5 border-t border-glass-border">
+        <div className="px-4 py-3 pb-safe md:px-5 border-t border-glass-border">
           <ChatInput onSend={handleSend} loading={loading} modelChoice={modelChoice} onModelChange={setModelChoice} />
         </div>
       </div>

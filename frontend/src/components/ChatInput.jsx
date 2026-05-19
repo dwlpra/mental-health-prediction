@@ -27,8 +27,8 @@ const MODELS = [
   {
     id: 'random_forest',
     name: 'Random Forest Tuned',
-    badge: 'Alternatif',
-    desc: '50 pohon keputusan yang digabung. Akurasinya hampir sama dengan Linear Regression, tapi lebih lambat.',
+    badge: 'Paling Akurat',
+    desc: '50 pohon keputusan yang digabung. Akurasi tertinggi (R²=0.565) namun lebih lambat dari Linear Regression.',
   },
 ]
 
