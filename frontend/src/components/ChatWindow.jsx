@@ -86,7 +86,7 @@ export default function ChatWindow() {
   }
 
   return (
-    <div className="h-dvh flex justify-center relative">
+    <div className="h-dvh flex justify-center relative overflow-x-hidden">
       {/* Container utama — full viewport, desktop: centered max-w-2xl */}
       <div className="w-full h-full md:max-w-2xl md:border-x md:border-glass-border relative">
 
