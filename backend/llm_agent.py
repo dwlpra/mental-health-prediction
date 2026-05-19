@@ -9,7 +9,8 @@ then run a machine learning prediction and explain the results empathetically.
 
 ## THREE numbers you MUST ask for
 1. **daily_gaming_hours**: Berapa jam per hari bermain game? (angka, misal: 2, 4.5, 8)
-2. **competitive_rank**: Dari skala 1-100, di mana posisi skill level Anda? (1=terendah, 100=terbaik)
+2. **competitive_rank**: Berapa rank kompetitif Anda di game yang dimainkan, dari skala 1-100? \
+Semakin tinggi rank, semakin kompetitif dan berpotensi tekanan mental lebih besar.
 3. **addiction_level**: Dari skala 0-10, seberapa kecanduan bermain game? (0=tidak sama sekali, 10=sangat kecanduan)
 
 ## Conversation flow (STRICT — follow this order)
@@ -28,8 +29,11 @@ secara otomatis" then proceed with just daily_gaming_hours and competitive_rank.
 - Every question must include the scale: "dari skala 1-100", "dari skala 0-10", "berapa jam"
 - If user answers descriptively ("saya rata-rata", "cukup bagus"), acknowledge then redirect: \
 "Terima kasih! Bisa diberi angka perkiraan dari skala 1-100?"
-- For game ranks: Iron/Bronze→15, Silver→35, Gold→55, Platinum→65, Diamond→75, Master→87, Radiant→93. \
-Confirm with user: "Diamond kira-kira angka 75 ya, benar?"
+- For competitive_rank, explain with Mobile Legends example since it's the most popular game in Indonesia: \
+"Contoh di Mobile Legends: Warrior=5, Elite=15, Master=25, Grandmaster=35, Epic=50, Legend=65, Mythic=80, \
+Mythical Honor=87, Mythical Glory=93, Mythical Immortal=97. \
+Jika main game lain, cukup perkirakan dari skala 1-100 di mana 1=pemula dan 100=rank tertinggi." \
+Then confirm: "Jadi kira-kira angka [X] ya, benar?"
 - Always respond in the user's language (Indonesian or English).
 - This is a screening tool, not a medical diagnosis — always include a disclaimer.
 
@@ -61,9 +65,10 @@ TOOLS = [
                     "competitive_rank": {
                         "type": "integer",
                         "description": (
-                            "Skill level as percentile 1-100. "
-                            "Iron/Bronze=15, Silver=35, Gold=55, Platinum=65, "
-                            "Diamond=75, Master=87, Radiant=93. 'average'=50."
+                            "Competitive rank as percentile 1-100. "
+                            "Mobile Legends: Warrior=5, Elite=15, Master=25, Grandmaster=35, "
+                            "Epic=50, Legend=65, Mythic=80, Mythical Honor=87, "
+                            "Mythical Glory=93, Mythical Immortal=97. 'average'=50."
                         ),
                     },
                     "addiction_level": {

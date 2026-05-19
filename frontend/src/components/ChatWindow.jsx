@@ -20,11 +20,25 @@ import ChatInput from './ChatInput'
 import { sendMessage, resetChat } from '../lib/api'
 
 export default function ChatWindow() {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([
+    {
+      id: 0,
+      role: 'assistant',
+      text: '',
+      prediction: null,
+      welcome: true,
+    },
+  ])
   const [loading, setLoading] = useState(false)
   const [modelChoice, setModelChoice] = useState('linear_regression')
   const scrollRef = useRef(null)
   const nextId = useRef(1) // auto-increment ID untuk setiap message
+
+  // Hubungkan suggestion buttons di welcome card ke handleSend
+  useEffect(() => {
+    window.__sendSuggestion = (text) => handleSend(text)
+    return () => delete window.__sendSuggestion
+  })
 
   // Auto-scroll ke bawah setiap ada message baru atau loading selesai
   useEffect(() => {
@@ -55,8 +69,16 @@ export default function ChatWindow() {
   // Reset semua message + reset session AI di backend
   async function handleReset() {
     try { await resetChat() } catch {}
-    setMessages([])
     nextId.current = 1
+    setMessages([
+      {
+        id: 0,
+        role: 'assistant',
+        text: '',
+        prediction: null,
+        welcome: true,
+      },
+    ])
   }
 
   return (
@@ -82,17 +104,6 @@ export default function ChatWindow() {
         {/* Area pesan — scrollable, min-h-0 agar flex child bisa shrink */}
         <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 md:px-5">
           <div className="space-y-3">
-            {/* Empty state — tampil kalau belum ada pesan */}
-            {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center pt-20 md:pt-28 text-center">
-                <div className="text-4xl mb-4">💬</div>
-                <h2 className="text-base font-semibold text-foreground mb-1">Start a Conversation</h2>
-                <p className="text-sm text-muted-foreground max-w-xs md:max-w-sm">
-                  Chat tentang kebiasaan gaming Anda untuk mengetahui prediksi risiko kesehatan mental.
-                </p>
-              </div>
-            )}
-
             {/* Render setiap message bubble */}
             {messages.map((msg) => (
               <MessageBubble key={msg.id} message={msg} />
