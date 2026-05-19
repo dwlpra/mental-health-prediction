@@ -30,6 +30,7 @@ export default function ChatWindow() {
     },
   ])
   const [loading, setLoading] = useState(false)
+  const [resetting, setResetting] = useState(false)
   const [modelChoice, setModelChoice] = useState('linear_regression')
   const scrollRef = useRef(null)
   const nextId = useRef(1) // auto-increment ID untuk setiap message
@@ -68,7 +69,9 @@ export default function ChatWindow() {
 
   // Reset semua message + reset session AI di backend
   async function handleReset() {
+    setResetting(true)
     try { await resetChat() } catch {}
+    await new Promise((r) => setTimeout(r, 600))
     nextId.current = 1
     setMessages([
       {
@@ -79,16 +82,17 @@ export default function ChatWindow() {
         welcome: true,
       },
     ])
+    setResetting(false)
   }
 
   return (
-    <div className="h-dvh flex justify-center">
-      {/* Container utama — full viewport height, desktop: centered max-w-2xl */}
-      <div className="w-full h-full flex flex-col
-        md:max-w-2xl md:border-x md:border-glass-border">
+    <div className="h-dvh flex justify-center relative">
+      {/* Container utama — full viewport, desktop: centered max-w-2xl */}
+      <div className="w-full h-full md:max-w-2xl md:border-x md:border-glass-border relative">
 
-        {/* Header — judul + tombol reset */}
-        <div className="flex items-center justify-between px-4 py-3 md:px-5 border-b border-glass-border">
+        {/* Header — floating sticky di atas */}
+        <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 py-3 md:px-5
+          bg-background/80 backdrop-blur-xl border-b border-glass-border">
           <div className="min-w-0">
             <h1 className="text-sm font-semibold text-foreground truncate">🧠 Mental Health Predictor</h1>
             <p className="text-[11px] text-muted-foreground hidden sm:block">ML Pipeline + Groq AI</p>
@@ -101,15 +105,13 @@ export default function ChatWindow() {
           </button>
         </div>
 
-        {/* Area pesan — scrollable, min-h-0 agar flex child bisa shrink */}
-        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 md:px-5">
+        {/* Area pesan — satu-satunya yang scroll */}
+        <div ref={scrollRef} className={`absolute inset-0 overflow-y-auto px-4 pt-16 pb-28 md:px-5 transition-opacity duration-500 ${resetting ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
           <div className="space-y-3">
-            {/* Render setiap message bubble */}
             {messages.map((msg) => (
               <MessageBubble key={msg.id} message={msg} />
             ))}
 
-            {/* Loading indicator — 3 titik animasi */}
             {loading && (
               <div className="flex justify-center py-4">
                 <div className="flex gap-1.5">
@@ -122,10 +124,12 @@ export default function ChatWindow() {
           </div>
         </div>
 
-        {/* Input area — model picker + text input */}
-        <div className="px-4 py-3 pb-safe md:px-5 border-t border-glass-border">
+        {/* Footer — floating sticky di bawah */}
+        <div className="absolute bottom-0 inset-x-0 z-20 px-4 pt-3 pb-6 md:px-5
+          bg-background/80 backdrop-blur-xl border-t border-glass-border">
           <ChatInput onSend={handleSend} loading={loading} modelChoice={modelChoice} onModelChange={setModelChoice} />
         </div>
+
       </div>
     </div>
   )
