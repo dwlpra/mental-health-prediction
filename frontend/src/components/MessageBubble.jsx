@@ -1,13 +1,4 @@
-/**
- * MessageBubble — Menampilkan satu bubble pesan (user / AI / system error).
- *
- * PROPS:
- * - message.role: 'user' → bubble ungu di kanan, 'assistant' → bubble glass di kiri, 'system' → error banner
- * - message.text: isi pesan
- * - message.prediction: jika ada, render PredictionCard di dalam bubble AI
- *
- * Untuk tambah tipe message baru (misal 'typing-indicator'), tambah kondisi di sini.
- */
+import { useState, useEffect, useRef } from 'react'
 import PredictionCard from './PredictionCard'
 
 const SUGGESTIONS = [
@@ -16,8 +7,39 @@ const SUGGESTIONS = [
   'Saya merasa cukup adiktif, nilai 8 dari 10',
 ]
 
+// Typing effect: reveal teks AI per karakter
+function TypingText({ text, onDone }) {
+  const [displayed, setDisplayed] = useState('')
+  const done = useRef(false)
+
+  useEffect(() => {
+    if (done.current) return
+    let i = 0
+    const speed = Math.max(8, Math.min(20, 1500 / text.length))
+    const interval = setInterval(() => {
+      i += 2
+      if (i >= text.length) {
+        setDisplayed(text)
+        clearInterval(interval)
+        done.current = true
+        onDone?.()
+      } else {
+        setDisplayed(text.slice(0, i))
+      }
+    }, speed)
+    return () => clearInterval(interval)
+  }, [text])
+
+  return (
+    <span>
+      {displayed}
+      {!done.current && <span className="inline-block w-[2px] h-4 bg-foreground/70 animate-pulse ml-0.5 align-middle" />}
+    </span>
+  )
+}
+
 export default function MessageBubble({ message }) {
-  // Welcome card — tampil saat pertama kali buka chat
+  // Welcome card
   if (message.welcome) {
     return (
       <div className="flex flex-col items-center pt-8 md:pt-16 pb-4 px-2">
@@ -52,7 +74,7 @@ export default function MessageBubble({ message }) {
     )
   }
 
-  // System message — error banner merah
+  // System message
   if (message.role === 'system') {
     return (
       <div className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs text-destructive backdrop-blur-sm">
@@ -67,11 +89,12 @@ export default function MessageBubble({ message }) {
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div className={`rounded-xl px-3 py-2.5 sm:px-4 sm:py-3 max-w-[90%] sm:max-w-[80%] backdrop-blur-md ${
         isUser
-          ? 'bg-primary/80 text-primary-foreground'   // User: ungu semi-transparan
-          : 'bg-glass border border-glass-border text-foreground'  // AI: glass effect
+          ? 'bg-primary/80 text-primary-foreground'
+          : 'bg-glass border border-glass-border text-foreground'
       }`}>
-        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.text}</p>
-        {/* PredictionCard hanya muncul di bubble AI yang punya prediksi */}
+        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+          {isUser ? message.text : <TypingText text={message.text} />}
+        </p>
         {message.prediction && <PredictionCard data={message.prediction} />}
       </div>
     </div>

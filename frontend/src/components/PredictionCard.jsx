@@ -21,17 +21,19 @@ const riskStyles = {
 
 export default function PredictionCard({ data }) {
   const s = riskStyles[data.risk_level] || riskStyles.low
+  const modelName = data.model_used === 'random_forest' ? 'Random Forest' : 'Linear Regression'
+  const modelShort = data.model_used === 'random_forest' ? 'RF' : 'LR'
 
   return (
     <div className={`mt-3 rounded-xl border border-glass-border ${s.border} border-l-4 ${s.bg} backdrop-blur-md p-3 sm:p-4`}>
-      {/* Baris atas: label Assessment + model yang dipakai + risk level */}
+      {/* Baris atas: ML badge + model name + risk level */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-            Assessment
+          <span className="text-[9px] font-medium uppercase tracking-wider bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+            ML Pipeline
           </span>
-          <span className="text-[9px] text-muted-foreground/60">
-            {data.model_used === 'random_forest' ? 'RF' : 'LR'}
+          <span className="text-[9px] text-muted-foreground">
+            {modelName}
           </span>
         </div>
         <span className={`text-[10px] font-semibold uppercase ${s.color}`}>
@@ -59,18 +61,18 @@ export default function PredictionCard({ data }) {
       {/* Statistik: jam main, rank, adiksi */}
       <div className="grid grid-cols-3 gap-2 text-center border-t border-glass-border pt-3">
         <div>
-          <p className="text-[9px] sm:text-[10px] text-muted-foreground">Hours</p>
+          <p className="text-[9px] sm:text-[10px] text-muted-foreground">Hours / day</p>
           <p className="text-sm sm:text-base font-semibold">{data.daily_gaming_hours}</p>
         </div>
         <div>
           <p className="text-[9px] sm:text-[10px] text-muted-foreground">Rank</p>
-          <p className="text-sm sm:text-base font-semibold">{data.competitive_rank}%</p>
+          <p className="text-sm sm:text-base font-semibold">{data.competitive_rank}<span className="text-[10px] text-muted-foreground">/100</span></p>
         </div>
         <div>
           <p className="text-[9px] sm:text-[10px] text-muted-foreground">Addiction</p>
-          <p className="text-sm sm:text-base font-semibold">{data.addiction_level}</p>
+          <p className="text-sm sm:text-base font-semibold">{data.addiction_level}<span className="text-[10px] text-muted-foreground">/10</span></p>
           <p className="text-[8px] sm:text-[9px] text-muted-foreground">
-            {data.addiction_source === 'user_input' ? 'Your input' : 'Estimated'}
+            {data.addiction_source === 'user_input' ? 'Your input' : 'ML estimated'}
           </p>
         </div>
       </div>
