@@ -9,7 +9,11 @@
  * - POST /api/chat/reset  → clear session AI
  * - GET  /api/health      → { status, models_loaded }
  */
-const API_BASE = '/api'
+// Dev: Vite proxy handles /api → localhost:8000
+// Prod: VITE_API_URL di-set di Cloudflare Pages env (misal "https://vps.domain.com")
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api'
 
 // Kirim pesan chat ke AI. model_choice: 'linear_regression' | 'random_forest'
 export async function sendMessage(message, modelChoice) {

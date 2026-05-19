@@ -60,10 +60,10 @@ export default function ChatWindow() {
   }
 
   return (
-    <div className="h-full flex justify-center overflow-hidden">
-      {/* Container utama — mobile: full width, desktop: centered max-w-2xl */}
+    <div className="h-screen flex justify-center">
+      {/* Container utama — full viewport height, desktop: centered max-w-2xl */}
       <div className="w-full h-full flex flex-col
-        md:max-w-2xl md:my-6 md:rounded-2xl md:border md:border-glass-border md:bg-glass md:backdrop-blur-xl md:shadow-2xl md:overflow-hidden">
+        md:max-w-2xl md:border-x md:border-glass-border">
 
         {/* Header — judul + tombol reset */}
         <div className="flex items-center justify-between px-4 py-3 md:px-5 border-b border-glass-border">
@@ -79,8 +79,8 @@ export default function ChatWindow() {
           </button>
         </div>
 
-        {/* Area pesan — scrollable */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 md:px-5">
+        {/* Area pesan — scrollable, min-h-0 agar flex child bisa shrink */}
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 md:px-5">
           <div className="space-y-3">
             {/* Empty state — tampil kalau belum ada pesan */}
             {messages.length === 0 && (
