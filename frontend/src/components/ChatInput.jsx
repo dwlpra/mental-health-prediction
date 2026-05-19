@@ -74,7 +74,7 @@ export default function ChatInput({ onSend, loading, modelChoice, onModelChange 
 
         {/* Popover daftar model — muncul di atas input */}
         {showModels && (
-          <div className="absolute bottom-full left-0 mb-2 w-[calc(100vw-2rem)] sm:w-72 max-w-[320px] rounded-xl border border-glass-border bg-card backdrop-blur-xl shadow-2xl z-50 overflow-hidden">
+          <div className="absolute bottom-full left-0 mb-2 w-[calc(100vw-2rem)] sm:w-72 max-w-[320px] rounded-xl border border-glass-border bg-[#1a1040]/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden">
             {MODELS.map((m) => (
               <button
                 key={m.id}
