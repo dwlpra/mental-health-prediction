@@ -1,0 +1,26 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Environment (jangan push API key)
+.env
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.sw?
+*.suo
+
+# OS
+.DStore
+
+# Docker
+docker-compose.override.yml
+
+# Dataset terlalu besar untuk GitHub (172MB), pakai Git LFS atau upload terpisah
+notebook/gaming_mental_health.csv
