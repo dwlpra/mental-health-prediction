@@ -8,25 +8,30 @@ tags:
   - gaming
   - depression
   - tabular
-  - survey
+  - synthetic
 language:
   - en
 pretty_name: Mental Health Gaming Behavior
 size_categories:
-  - 100K<n<1M
+  - 1M<n<10M
 ---
 
 # Mental Health Gaming Behavior Dataset
 
-Dataset of gaming behavior and mental health indicators used to predict **depression_score (0–10)** through model chaining.
+Synthetic dataset of gaming behavior and mental health indicators used to predict **depression_score (0–10)** through model chaining.
 
 > **Tugas 4: Modeling Experiments — Kelompok 3**
 
 ## Dataset Summary
 
-- **Size**: ~400,000 rows
+- **Size**: 968,287 rows × 39 columns
+- **Source**: Kaggle (synthetic data)
 - **File**: `gaming_mental_health.csv`
 - **Target**: `depression_score` (0–10, continuous)
+
+## Disclaimer
+
+This is a **synthetic dataset** generated for educational purposes. It does not represent real individuals and should not be used to draw conclusions about actual mental health conditions.
 
 ## Key Columns
 

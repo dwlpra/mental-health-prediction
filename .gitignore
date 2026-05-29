@@ -24,3 +24,5 @@ docker-compose.override.yml
 
 # Dataset terlalu besar untuk GitHub (172MB), pakai Git LFS atau upload terpisah
 notebook/gaming_mental_health.csv
+
+LAPORAN.md

@@ -15,7 +15,7 @@ const API_BASE = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : '/api'
 
-// Kirim pesan chat ke AI. model_choice: 'linear_regression' | 'random_forest'
+// Kirim pesan chat ke AI
 export async function sendMessage(message, modelChoice) {
   const res = await fetch(`${API_BASE}/chat`, {
     method: 'POST',

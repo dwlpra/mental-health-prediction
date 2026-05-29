@@ -6,3 +6,6 @@ scikit-learn>=1.0.0
 joblib>=1.1.0
 openai>=1.0.0
 python-dotenv>=1.0.0
+xgboost>=2.0.0
+lightgbm>=4.0.0
+huggingface-hub>=0.20.0

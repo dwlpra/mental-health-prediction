@@ -3,47 +3,75 @@ name: Deploy
 on:
   push:
     branches: [main]
-  workflow_dispatch:  # bisa trigger manual dari GitHub UI
+  workflow_dispatch:
 
 jobs:
   # ──────────────────────────────────────────────
-  # Job 1: Build & deploy frontend ke Cloudflare Pages
+  # Job 1: Upload models & dataset ke HuggingFace
   # ──────────────────────────────────────────────
-  deploy-frontend:
+  deploy-huggingface:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          python-version: "3.12"
 
-      - name: Install & build
+      - name: Install dependencies
+        run: pip install -q huggingface-hub
+
+      - name: Upload models to HuggingFace
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          cd frontend
-          npm ci
-          npm run build
+          python3 -c "
+          from huggingface_hub import HfApi
+          api = HfApi(token='$HF_TOKEN')
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: mental-health-predictor
-          directory: frontend/dist
-          # Optional: gitHubToken tidak diperlukan untuk deploy biasa
+          # Upload model files
+          for f in ['model_lr_v3.pkl', 'model_xgb_v3.pkl', 'model_lgbm_v3.pkl',
+                    'scaler_v3.pkl', 'features_v3.pkl', 'medians_v3.pkl']:
+              api.upload_file(
+                  path_or_fileobj='models/' + f,
+                  path_in_repo=f,
+                  repo_id='adeputr4/mental-health-gaming-predictor',
+                  repo_type='model',
+              )
+
+          # Upload model card
+          api.upload_file(
+              path_or_fileobj='README_HF.md',
+              path_in_repo='README.md',
+              repo_id='adeputr4/mental-health-gaming-predictor',
+              repo_type='model',
+          )
+          print('Models uploaded!')
+          "
+
+      - name: Upload dataset to HuggingFace
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python3 -c "
+          from huggingface_hub import HfApi
+          api = HfApi(token='$HF_TOKEN')
+
+          # Upload dataset card only (CSV too large, upload once manually via make hf-upload-dataset)
+          api.upload_file(
+              path_or_fileobj='README_DATASET.md',
+              path_in_repo='README.md',
+              repo_id='adeputr4/mental-health-gaming-dataset',
+              repo_type='dataset',
+          )
+          print('Dataset card uploaded!')
+          "
 
   # ──────────────────────────────────────────────
   # Job 2: SSH ke VPS, pull, rebuild backend
   # ──────────────────────────────────────────────
   deploy-backend:
     runs-on: ubuntu-latest
-    needs: []  # jalan paralel dengan frontend, hapus baris ini kalau mau sequential
     steps:
       - name: SSH deploy ke VPS
         uses: appleboy/ssh-action@v1

@@ -1,34 +1,23 @@
-/**
- * ChatInput — Area input pesan + model picker (seperti Gemini).
- *
- * PROPS:
- * - onSend(text): callback ke ChatWindow saat user kirim pesan
- * - loading: true kalau lagi nunggu response AI
- * - modelChoice: 'linear_regression' | 'random_forest'
- * - onModelChange(id): callback saat user ganti model
- *
- * FITUR:
- * - Model picker popover: klik nama model di atas input → muncul daftar model + deskripsi
- * - Click outside tutup popover
- * - Enter untuk kirim pesan
- *
- * Untuk tambah model baru: tambah entry di array MODELS, pastikan id-nya
- * cocok dengan yang diterima backend (pipeline.py model_choice parameter).
- */
 import { useState, useRef, useEffect } from 'react'
 
 const MODELS = [
   {
     id: 'linear_regression',
     name: 'Linear Regression',
-    badge: 'Rekomendasi',
-    desc: 'Model utama. Mencari hubungan lurus antara kebiasaan gaming dan depresi. Cepat, akurat, dan mudah dijelaskan.',
+    badge: 'Paling Akurat',
+    desc: 'R²=0.732 · Tercepat (0.6s). Hubungan linear antara fitur gaming dan depresi.',
   },
   {
-    id: 'random_forest',
-    name: 'Random Forest Tuned',
-    badge: 'Paling Akurat',
-    desc: '50 pohon keputusan yang digabung. Akurasi tertinggi (R²=0.565) namun lebih lambat dari Linear Regression.',
+    id: 'xgboost',
+    name: 'XGBoost',
+    badge: 'Ensemble',
+    desc: 'R²=0.731 · Gradient boosting dengan 430 pohon. Menangkap pola non-linear.',
+  },
+  {
+    id: 'lightgbm',
+    name: 'LightGBM',
+    badge: 'Cepat',
+    desc: 'R²=0.730 · Histogram-based boosting. Secepat LR tapi lebih kompleks.',
   },
 ]
 
@@ -37,12 +26,9 @@ export default function ChatInput({ onSend, loading, modelChoice, onModelChange 
   const [showModels, setShowModels] = useState(false)
   const pickerRef = useRef(null)
 
-  // Tutup popover kalau klik di luar area picker
   useEffect(() => {
     function handleOutside(e) {
-      if (pickerRef.current && !pickerRef.current.contains(e.target)) {
-        setShowModels(false)
-      }
+      if (pickerRef.current && !pickerRef.current.contains(e.target)) setShowModels(false)
     }
     if (showModels) document.addEventListener('mousedown', handleOutside)
     return () => document.removeEventListener('mousedown', handleOutside)
@@ -59,7 +45,7 @@ export default function ChatInput({ onSend, loading, modelChoice, onModelChange 
 
   return (
     <div>
-      {/* Model picker — tombol kecil di atas input */}
+      {/* Model picker */}
       <div className="relative mb-2" ref={pickerRef}>
         <button
           onClick={() => setShowModels(!showModels)}
@@ -72,9 +58,8 @@ export default function ChatInput({ onSend, loading, modelChoice, onModelChange 
           </svg>
         </button>
 
-        {/* Popover daftar model — muncul di atas input */}
         {showModels && (
-          <div className="absolute bottom-full left-0 mb-2 w-[calc(100vw-2rem)] sm:w-72 max-w-[320px] rounded-xl border border-glass-border bg-[#1a1040]/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden">
+          <div className="absolute bottom-full left-0 mb-2 w-[calc(100vw-2rem)] sm:w-80 max-w-[340px] rounded-xl border border-glass-border bg-[#1a1040]/95 backdrop-blur-xl shadow-2xl z-50 overflow-hidden">
             {MODELS.map((m) => (
               <button
                 key={m.id}
@@ -94,7 +79,7 @@ export default function ChatInput({ onSend, loading, modelChoice, onModelChange 
         )}
       </div>
 
-      {/* Input field + tombol Send */}
+      {/* Input + Send */}
       <div className="flex gap-2">
         <input
           value={text}

@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import PredictionCard from './PredictionCard'
 
 const SUGGESTIONS = [
-  'Saya bermain game 6 jam sehari',
-  'Saya rank top 20% dan main 4 jam/hari',
-  'Saya merasa cukup adiktif, nilai 8 dari 10',
+  'Saya main game 6 jam sehari dan stress level 7',
+  'Saya kecanduan level 8 dan sering cemas',
+  'Saya merasa kesepian dan main game 10 jam sehari',
 ]
 
 // Typing effect: reveal teks AI per karakter

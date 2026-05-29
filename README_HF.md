@@ -98,7 +98,8 @@ print(f"Depression Score: {score:.2f}")
 
 ## Dataset
 
-Gaming behavior and mental health dataset (~172MB, ~400K rows) collected from online surveys.
+Synthetic gaming behavior and mental health dataset from Kaggle (968,287 rows, 39 columns).
+Available at: [adeputr4/mental-health-gaming-dataset](https://huggingface.co/datasets/adeputr4/mental-health-gaming-dataset)
 
 ## Team
 
