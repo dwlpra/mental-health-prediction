@@ -1,7 +1,19 @@
 import json
+import time
 from openai import OpenAI
 
 from backend.pipeline import MentalHealthPipeline
+from prometheus_client import Counter, Histogram
+
+llm_latency = Histogram(
+    "mh_llm_request_duration_seconds",
+    "LLM API response time",
+    ["model"]
+)
+api_key_rotation_total = Counter(
+    "mh_api_key_rotation_total",
+    "Total API key rotations due to errors"
+)
 
 SYSTEM_INSTRUCTION = """You are a warm, empathetic mental health screening assistant specialized in \
 gaming behavior. You have natural, flowing conversations — NOT robotic question-answer sessions. \
@@ -151,7 +163,11 @@ class LLMAgent:
         tried = 0
         while tried < len(self.api_keys):
             try:
-                return self.client.chat.completions.create(**kwargs)
+                start = time.time()
+                result = self.client.chat.completions.create(**kwargs)
+                elapsed = time.time() - start
+                llm_latency.labels(model=self.model).observe(elapsed)
+                return result
             except Exception as e:
                 err = str(e).lower()
                 is_retryable = any(code in err for code in [
@@ -164,6 +180,7 @@ class LLMAgent:
                 ])
                 if is_retryable and tried < len(self.api_keys) - 1:
                     print(f"[LLM] Key {self.current_key_idx + 1} error: {e}. Rotating...")
+                    api_key_rotation_total.inc()
                     self._rotate_key()
                     tried += 1
                     continue

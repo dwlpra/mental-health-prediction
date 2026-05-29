@@ -1,0 +1,118 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Total Predictions",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sum(mh_prediction_total)", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } }, "overrides": [] }
+    },
+    {
+      "title": "Avg Depression Score",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        { "expr": "rate(mh_depression_score_sum[1h]) / rate(mh_depression_score_count[1h])", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "decimals": 2, "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 4 }, { "color": "red", "value": 7 }] } }, "overrides": [] }
+    },
+    {
+      "title": "Total Chat Messages",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "sum(mh_chat_messages_total)", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } }, "overrides": [] }
+    },
+    {
+      "title": "API Key Rotations",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+      "targets": [
+        { "expr": "sum(mh_api_key_rotation_total)", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 3 }, { "color": "red", "value": 10 }] } }, "overrides": [] }
+    },
+    {
+      "title": "Predictions by Risk Level",
+      "type": "piechart",
+      "gridPos": { "h": 10, "w": 8, "x": 0, "y": 5 },
+      "targets": [
+        { "expr": "mh_risk_level_total", "legendFormat": "{{risk_level}}", "refId": "A" }
+      ]
+    },
+    {
+      "title": "Depression Score Distribution",
+      "type": "barchart",
+      "gridPos": { "h": 10, "w": 8, "x": 8, "y": 5 },
+      "targets": [
+        { "expr": "rate(mh_depression_score_bucket[1h])", "legendFormat": "{{le}}", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "orange", "mode": "fixed" } }, "overrides": [] }
+    },
+    {
+      "title": "Predictions Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 8, "x": 16, "y": 5 },
+      "targets": [
+        { "expr": "rate(mh_prediction_total[5m]) * 60", "legendFormat": "{{model_used}} / {{risk_level}}", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "opm", "color": { "mode": "palette-classic" } }, "overrides": [] }
+    },
+    {
+      "title": "LLM Response Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, rate(mh_llm_request_duration_seconds_bucket[5m]))", "legendFormat": "p50", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, rate(mh_llm_request_duration_seconds_bucket[5m]))", "legendFormat": "p95", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, rate(mh_llm_request_duration_seconds_bucket[5m]))", "legendFormat": "p99", "refId": "C" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "palette-classic" } }, "overrides": [] }
+    },
+    {
+      "title": "Chat Messages Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "targets": [
+        { "expr": "rate(mh_chat_messages_total[5m]) * 60", "legendFormat": "msg/min", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "opm", "color": { "fixedColor": "purple", "mode": "fixed" } }, "overrides": [] }
+    },
+    {
+      "title": "Predictions by Model",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
+      "targets": [
+        { "expr": "sum by(model_used) (mh_prediction_total)", "legendFormat": "{{model_used}}", "refId": "A" }
+      ]
+    },
+    {
+      "title": "Risk Level Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
+      "targets": [
+        { "expr": "increase(mh_risk_level_total[1h])", "legendFormat": "{{risk_level}}", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" } }, "overrides": [] }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["business", "mental-health"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Business Metrics — Mental Health Insights",
+  "uid": "mental-health-business",
+  "version": 1
+}
