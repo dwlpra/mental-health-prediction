@@ -4,6 +4,9 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# Install system deps for LightGBM/scikit-learn
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 curl && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies first (cached layer)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
