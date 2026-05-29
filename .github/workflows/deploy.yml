@@ -85,7 +85,12 @@ jobs:
             docker stop mental-health-api 2>/dev/null || true
             docker rm -f mental-health-api 2>/dev/null || true
             docker-compose build
-            docker-compose up -d
+            docker run -d \
+              --name mental-health-api \
+              --restart unless-stopped \
+              -p 7500:8000 \
+              --env-file .env \
+              mental-health-prediction_backend
             echo "Menunggu health check..."
             sleep 10
             curl -sf http://localhost:7500/api/health && echo " ✅ Backend OK" || echo " ❌ Backend gagal"
