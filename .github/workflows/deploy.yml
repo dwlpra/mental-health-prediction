@@ -82,8 +82,8 @@ jobs:
           script: |
             cd /home/clawuser/mental-health-prediction
             git pull origin main
-            docker compose build --no-cache
-            docker compose up -d
+            docker-compose build --no-cache
+            docker-compose up -d
             echo "Menunggu health check..."
             sleep 5
             curl -sf http://localhost:7500/api/health && echo " ✅ Backend OK" || echo " ❌ Backend gagal"
