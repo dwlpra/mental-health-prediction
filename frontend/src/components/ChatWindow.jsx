@@ -41,10 +41,12 @@ export default function ChatWindow() {
     return () => delete window.__sendSuggestion
   })
 
-  // Auto-scroll ke bawah setiap ada message baru atau loading selesai
-  useEffect(() => {
+  // Auto-scroll ke bawah
+  function scrollToBottom() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-  }, [messages, loading])
+  }
+
+  useEffect(() => { scrollToBottom() }, [messages, loading])
 
   // Helper: tambah message ke state
   function add(role, text, prediction = null) {
@@ -109,7 +111,7 @@ export default function ChatWindow() {
         <div ref={scrollRef} className={`absolute inset-0 overflow-y-auto px-4 pt-16 pb-28 md:px-5 transition-opacity duration-500 ${resetting ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
           <div className="space-y-3">
             {messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
+              <MessageBubble key={msg.id} message={msg} onType={scrollToBottom} />
             ))}
 
             {loading && (

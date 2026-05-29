@@ -8,7 +8,7 @@ const SUGGESTIONS = [
 ]
 
 // Typing effect: reveal teks AI per karakter
-function TypingText({ text, onDone }) {
+function TypingText({ text, onTick }) {
   const [displayed, setDisplayed] = useState('')
   const done = useRef(false)
 
@@ -22,10 +22,10 @@ function TypingText({ text, onDone }) {
         setDisplayed(text)
         clearInterval(interval)
         done.current = true
-        onDone?.()
       } else {
         setDisplayed(text.slice(0, i))
       }
+      onTick?.()
     }, speed)
     return () => clearInterval(interval)
   }, [text])
@@ -38,7 +38,7 @@ function TypingText({ text, onDone }) {
   )
 }
 
-export default function MessageBubble({ message }) {
+export default function MessageBubble({ message, onType }) {
   // Welcome card
   if (message.welcome) {
     return (
@@ -93,7 +93,7 @@ export default function MessageBubble({ message }) {
           : 'bg-glass border border-glass-border text-foreground'
       }`}>
         <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-          {isUser ? message.text : <TypingText text={message.text} />}
+          {isUser ? message.text : <TypingText text={message.text} onTick={onType} />}
         </p>
         {message.prediction && <PredictionCard data={message.prediction} />}
       </div>
