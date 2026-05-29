@@ -82,9 +82,10 @@ jobs:
           script: |
             cd /home/clawuser/mental-health-prediction
             git pull origin main
-            docker-compose down || true
-            docker-compose build --no-cache
+            docker stop mental-health-api 2>/dev/null || true
+            docker rm -f mental-health-api 2>/dev/null || true
+            docker-compose build
             docker-compose up -d
             echo "Menunggu health check..."
-            sleep 5
+            sleep 10
             curl -sf http://localhost:7500/api/health && echo " ✅ Backend OK" || echo " ❌ Backend gagal"
