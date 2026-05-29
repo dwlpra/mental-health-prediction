@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from backend.config import LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, MODEL_DIR, CORS_ORIGINS
+from backend.config import LLM_API_KEYS, LLM_BASE_URL, LLM_MODEL, MODEL_DIR, CORS_ORIGINS
 from backend.pipeline import MentalHealthPipeline
 from backend.llm_agent import LLMAgent
 
@@ -27,7 +27,7 @@ agent: LLMAgent | None = None
 def startup():
     global pipeline, agent
     pipeline = MentalHealthPipeline(MODEL_DIR)
-    agent = LLMAgent(pipeline, LLM_API_KEY, LLM_BASE_URL, LLM_MODEL)
+    agent = LLMAgent(pipeline, LLM_API_KEYS, LLM_BASE_URL, LLM_MODEL)
 
 
 class ChatRequest(BaseModel):

@@ -109,13 +109,50 @@ TOOLS = [
 
 
 class LLMAgent:
-    def __init__(self, pipeline: MentalHealthPipeline, api_key: str, base_url: str, model: str):
+    def __init__(self, pipeline: MentalHealthPipeline, api_keys: list[str], base_url: str, model: str):
         self.pipeline = pipeline
         self.model = model
-        self.client = OpenAI(api_key=api_key, base_url=base_url)
+        self.base_url = base_url
+        self.api_keys = api_keys
+        self.current_key_idx = 0
+        self.client = self._make_client()
         self.history: list[dict] = [
             {"role": "system", "content": SYSTEM_INSTRUCTION}
         ]
+
+    def _make_client(self) -> OpenAI:
+        key = self.api_keys[self.current_key_idx % len(self.api_keys)]
+        return OpenAI(api_key=key, base_url=self.base_url)
+
+    def _rotate_key(self) -> bool:
+        """Rotate ke key berikutnya. Return False kalau sudah cycle semua key."""
+        self.current_key_idx = (self.current_key_idx + 1) % len(self.api_keys)
+        self.client = self._make_client()
+        return True
+
+    def _call_with_rotation(self, **kwargs) -> object:
+        """Call OpenAI API dengan auto-rotate key kalau rate limit / auth error."""
+        tried = 0
+        while tried < len(self.api_keys):
+            try:
+                return self.client.chat.completions.create(**kwargs)
+            except Exception as e:
+                err = str(e).lower()
+                is_retryable = any(code in err for code in [
+                    "429",           # rate limit
+                    "rate_limit",
+                    "limit",
+                    "401",           # invalid key
+                    "invalid_api_key",
+                    "invalid request",
+                ])
+                if is_retryable and tried < len(self.api_keys) - 1:
+                    print(f"[LLM] Key {self.current_key_idx + 1} error: {e}. Rotating...")
+                    self._rotate_key()
+                    tried += 1
+                    continue
+                raise
+        raise RuntimeError("All API keys exhausted")
 
     def reset(self):
         self.history = [{"role": "system", "content": SYSTEM_INSTRUCTION}]
@@ -123,7 +160,7 @@ class LLMAgent:
     def chat(self, user_message: str, model_choice: str = "linear_regression") -> tuple[str, dict | None]:
         self.history.append({"role": "user", "content": user_message})
 
-        response = self.client.chat.completions.create(
+        response = self._call_with_rotation(
             model=self.model,
             messages=self.history,
             tools=TOOLS,
@@ -168,7 +205,7 @@ class LLMAgent:
                     "content": json.dumps(result),
                 })
 
-                final = self.client.chat.completions.create(
+                final = self._call_with_rotation(
                     model=self.model,
                     messages=self.history,
                     temperature=0.7,
